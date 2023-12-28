@@ -1,4 +1,4 @@
-import { Get, HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
+import { Delete, Get, HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
@@ -42,7 +42,14 @@ export class TasksService {
     return `This action updates a #${id} task`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  @Delete()
+  async remove(id: number) {
+    const nowDate = new Date();
+    const foundStatus = await this.statusRepository.findOne({where:{name:"Eliminado"}})
+    const foundTask = await this.taskRepository.findOne({where:{id}});
+    (await foundTask).deletedAt = nowDate;
+    (await foundTask).status = foundStatus
+
+    return this.taskRepository.save(foundTask);
   }
 }
