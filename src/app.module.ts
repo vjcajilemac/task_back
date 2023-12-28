@@ -14,12 +14,12 @@ import { TasksModule } from './tasks/tasks.module';
       password: dbConstants.password,
       database: dbConstants.name,
       synchronize: true,
-
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
     }),
     TasksModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
