@@ -3,7 +3,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Status } from './entities/status.entity';
 
 @Injectable()
@@ -27,8 +27,16 @@ export class TasksService {
   }
 
   @Get()
-  async findAll() {
-    const taskList = await this.taskRepository.find({where:{deletedAt:null}});
+  async findAll(searchString: string) {
+    const taskList = await this.taskRepository.find({where:[{deletedAt:null},{ name: Like(`%${searchString}%`) }], relations:['status']});
+    /*const taskList = await this.taskRepository
+      .createQueryBuilder('tasks')
+      .leftJoinAndSelect('tasks.status', 'status') // Cargar la información del estado relacionado
+      .where('tasks.name LIKE :searchString', { searchString: `%${searchString}%` })
+      .orWhere('status.name LIKE :searchString', { searchString: `%${searchString}%` })
+      .getMany();*/
+      
+      
     if (!taskList)
       return new HttpException('No se ha encontrado resultados', HttpStatus.NOT_FOUND);
     else return taskList;

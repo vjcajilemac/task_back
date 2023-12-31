@@ -4,6 +4,7 @@ import {
     DeleteDateColumn,
     PrimaryGeneratedColumn,
     ManyToOne,
+    JoinColumn,
 
   } from 'typeorm';
 import { Status } from './status.entity';
@@ -20,6 +21,7 @@ export class Task {
     @DeleteDateColumn()
     deletedAt: Date;
     @ManyToOne(() => Status, status => status.task)
+    @JoinColumn({ name: 'statusId' })
     status: Status
     
 }
