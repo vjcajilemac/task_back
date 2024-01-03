@@ -1,4 +1,4 @@
-import { Delete, Get, HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
+import { Delete, Get, HttpException, HttpStatus, Injectable, Patch, Post } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
@@ -28,7 +28,9 @@ export class TasksService {
 
   @Get()
   async findAll(searchString: string) {
-    const taskList = await this.taskRepository.find({where:[{deletedAt:null},{ name: Like(`%${searchString}%`) }], relations:['status']});
+    const taskList = await this.taskRepository.find({where:[{deletedAt:null},{ name: Like(`%${searchString}%`) }, {observation:Like(`%${searchString}%`)}], 
+    relations:['status'], 
+    order:{updatedAt:"DESC"}});
     /*const taskList = await this.taskRepository
       .createQueryBuilder('tasks')
       .leftJoinAndSelect('tasks.status', 'status') // Cargar la información del estado relacionado
@@ -49,6 +51,17 @@ export class TasksService {
   update(id: number, updateTaskDto: UpdateTaskDto) {
     return `This action updates a #${id} task`;
   }
+
+  @Patch()
+  async completeTask(id:number){
+    const nowDate = new Date();
+    const foundStatus = await this.statusRepository.findOne({where:{name:"Terminado"}});
+    const foundTask = await this.taskRepository.findOne({where:{id}});
+    (await foundTask).updatedAt = nowDate;
+    (await foundTask).status = foundStatus
+    return this.taskRepository.save(foundTask);
+  }
+
 
   @Delete()
   async remove(id: number) {
