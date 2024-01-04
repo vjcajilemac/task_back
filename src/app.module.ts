@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dbConstants } from '../db.constant';
 import { TasksModule } from './tasks/tasks.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -18,6 +20,8 @@ import { TasksModule } from './tasks/tasks.module';
       autoLoadEntities: true,
     }),
     TasksModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
